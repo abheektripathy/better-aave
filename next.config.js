@@ -35,6 +35,7 @@ module.exports = withBundleAnalyzer({
   // assetPrefix: "./",
   trailingSlash: true,
   pageExtensions,
+  transpilePackages: ['@avail-project/nexus-core'],
   // NOTE: Needed for SAFE testing locally
   // async headers() {
   //   return [

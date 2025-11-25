@@ -17,7 +17,6 @@ import { useRootStore } from 'src/store/root';
 import { fetchIconSymbolAndName } from 'src/ui-config/reservePatches';
 import { DASHBOARD } from 'src/utils/events';
 import { displayGhoForMintableMarket } from 'src/utils/ghoUtilities';
-import { ENABLE_TESTNET, STAGING_ENV } from 'src/utils/marketsAndNetworksConfig';
 
 import { ListWrapper } from '../../../../components/lists/ListWrapper';
 import { Link, ROUTES } from '../../../../components/primitives/Link';
@@ -72,9 +71,13 @@ export const SupplyAssetsList = () => {
 
   const { bridge, isTestnet, baseAssetSymbol, name: networkName } = currentNetworkConfig;
 
-  const localStorageName = 'showSupplyZeroAssets';
-  const [isShowZeroAssets, setIsShowZeroAssets] = useState(
-    localStorage.getItem(localStorageName) === 'true'
+  // const localStorageName = 'showSupplyZeroAssets';
+  // const [isShowZeroAssets, setIsShowZeroAssets] = useState(
+  //   localStorage.getItem(localStorageName) === 'true'
+  // );
+  const unifiedBalanceLocalStorageName = 'showUnifiedBalance';
+  const [isShowUnifiedBalance, setIsShowUnifiedBalance] = useState(
+    localStorage.getItem(unifiedBalanceLocalStorageName) === 'true'
   );
   const listCollapseKey = 'supplyAssetsDashboardTableCollapse';
   const [isListCollapsed, setIsListCollapsed] = useState(
@@ -218,11 +221,12 @@ export const SupplyAssetsList = () => {
   });
 
   // Filter out reserves
-  const supplyReserves: unknown = isShowZeroAssets
-    ? sortedSupplyReserves
-    : filteredSupplyReserves.length >= 1
-    ? filteredSupplyReserves
-    : sortedSupplyReserves;
+  const supplyReserves: unknown = //isShowZeroAssets
+    true
+      ? sortedSupplyReserves
+      : filteredSupplyReserves.length >= 1
+      ? filteredSupplyReserves
+      : sortedSupplyReserves;
 
   // Transform to the DashboardReserve schema so the sort utils can work with it
   const preSortedReserves = supplyReserves as DashboardReserve[];
@@ -351,7 +355,7 @@ export const SupplyAssetsList = () => {
 
           {filteredSupplyReserves.length >= 1 && (
             <>
-              <DashboardListTopPanel
+              {/*<DashboardListTopPanel
                 value={isShowZeroAssets}
                 onClick={setIsShowZeroAssets}
                 localStorageName={localStorageName}
@@ -360,6 +364,16 @@ export const SupplyAssetsList = () => {
                 label={<Trans>Show assets with 0 balance</Trans>}
                 showFaucet={STAGING_ENV || ENABLE_TESTNET}
                 showBridge={!ENABLE_TESTNET}
+              />*/}
+              <DashboardListTopPanel
+                value={isShowUnifiedBalance}
+                onClick={setIsShowUnifiedBalance}
+                localStorageName={unifiedBalanceLocalStorageName}
+                bridge={bridge}
+                eventName={DASHBOARD.SHOW_UNIFIED_BALANCE}
+                label={<Trans>Show unified balance</Trans>}
+                showFaucet={false}
+                showBridge={false}
               />
             </>
           )}

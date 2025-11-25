@@ -3537,10 +3537,6 @@ msgstr "Asset cannot be migrated because you have isolated collateral in {market
 msgid "I confirm the swap with a potential {0}% value {1}"
 msgstr "I confirm the swap with a potential {0}% value {1}"
 
-#: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsList.tsx
-msgid "Show assets with 0 balance"
-msgstr "Show assets with 0 balance"
-
 #: src/modules/dashboard/DashboardEModeButton.tsx
 msgid "E-Mode"
 msgstr "E-Mode"
@@ -3943,6 +3939,10 @@ msgstr "APY type change"
 #: src/components/isolationMode/IsolatedBadge.tsx
 msgid "Collateral usage is limited because of isolation mode."
 msgstr "Collateral usage is limited because of isolation mode."
+
+#: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsList.tsx
+msgid "Show unified balance"
+msgstr "Show unified balance"
 
 #: src/components/infoTooltips/MigrationDisabledTooltip.tsx
 msgid "Flashloan is disabled for this asset, hence this position cannot be migrated."

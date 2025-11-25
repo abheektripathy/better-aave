@@ -2,6 +2,7 @@ import { API_ETH_MOCK_ADDRESS, ERC20Service, transactionType } from '@aave/contr
 import { SignatureLike } from '@ethersproject/bytes';
 import { JsonRpcProvider, TransactionResponse } from '@ethersproject/providers';
 import { BigNumber, PopulatedTransaction, utils } from 'ethers';
+import dynamic from 'next/dynamic';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { useIsContractAddress } from 'src/hooks/useIsContractAddress';
 import { useRootStore } from 'src/store/root';
@@ -13,6 +14,8 @@ import { useShallow } from 'zustand/shallow';
 
 import { Web3Context } from '../hooks/useWeb3Context';
 import { getEthersProvider } from './adapters/EthersAdapter';
+
+const NexusProvider = dynamic(() => import('src/libs/web3-data-provider/NexusProvider'));
 
 export type ERC20TokenType = {
   address: string;
@@ -216,7 +219,8 @@ export const Web3ContextProvider: React.FC<{ children: ReactElement }> = ({ chil
         },
       }}
     >
-      {children}
+      {/* only initiate when unified balances in localstorage is turned on */}
+      <NexusProvider>{children}</NexusProvider>
     </Web3Context.Provider>
   );
 };
