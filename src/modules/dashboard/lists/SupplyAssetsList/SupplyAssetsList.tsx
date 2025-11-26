@@ -12,6 +12,7 @@ import { Warning } from 'src/components/primitives/Warning';
 import { AssetCapsProvider } from 'src/hooks/useAssetCaps';
 import { useCoingeckoCategories } from 'src/hooks/useCoinGeckoCategories';
 import { useWrappedTokens } from 'src/hooks/useWrappedTokens';
+import { useNexus } from 'src/libs/web3-data-provider/NexusProvider';
 import { AssetCategory, isAssetInCategoryDynamic } from 'src/modules/markets/utils/assetCategories';
 import { useRootStore } from 'src/store/root';
 import { fetchIconSymbolAndName } from 'src/ui-config/reservePatches';
@@ -50,6 +51,7 @@ const head = [
 export const SupplyAssetsList = () => {
   const { data, isLoading, error } = useCoingeckoCategories();
   const [selectedCategories, setSelectedCategories] = useState<AssetCategory[]>([]);
+  const { unifiedBalance, supportedChainsAndTokens } = useNexus();
 
   const currentNetworkConfig = useRootStore((store) => store.currentNetworkConfig);
   const currentChainId = useRootStore((store) => store.currentChainId);
@@ -104,10 +106,50 @@ export const SupplyAssetsList = () => {
           )
         )
     )
+    // If unified balance is enabled, prioritize tokens that are in supported chains and tokens
+    .sort((a, b) => {
+      if (isShowUnifiedBalance && supportedChainsAndTokens) {
+        const aSupported = supportedChainsAndTokens.some((chain) => {
+          return chain.tokens.some(
+            (token) => token.contractAddress.toLowerCase() === a.underlyingAsset.toLowerCase()
+          );
+        });
+
+        const bSupported = supportedChainsAndTokens.some((chain) => {
+          return chain.tokens?.some(
+            (token) => token.contractAddress.toLowerCase() === b.underlyingAsset.toLowerCase()
+          );
+        });
+
+        if (aSupported && !bSupported) return -1;
+        if (!aSupported && bSupported) return 1;
+      }
+      return 0;
+    })
 
     .map((reserve: ComputedReserveData) => {
-      const walletBalance = walletBalances[reserve.underlyingAsset]?.amount;
-      const walletBalanceUSD = walletBalances[reserve.underlyingAsset]?.amountUSD;
+      let walletBalance = walletBalances[reserve.underlyingAsset]?.amount;
+      let walletBalanceUSD = walletBalances[reserve.underlyingAsset]?.amountUSD;
+
+      // If unified balance is enabled, try to get balance from unified balance
+      if (isShowUnifiedBalance && unifiedBalance) {
+        const unifiedAsset = unifiedBalance.find((asset) => {
+          return (
+            asset.breakdown &&
+            asset.breakdown.some(
+              (item) =>
+                item.contractAddress &&
+                item.contractAddress.toLowerCase() === reserve.underlyingAsset.toLowerCase()
+            )
+          );
+        });
+
+        if (unifiedAsset) {
+          const typedAsset = unifiedAsset;
+          walletBalance = typedAsset.balance;
+          walletBalanceUSD = typedAsset.balanceInFiat.toString();
+        }
+      }
       let availableToDeposit = valueToBigNumber(walletBalance);
       if (reserve.supplyCap !== '0') {
         availableToDeposit = BigNumber.min(
@@ -134,9 +176,32 @@ export const SupplyAssetsList = () => {
         : !hasDifferentCollateral;
 
       if (reserve.isWrappedBaseAsset) {
-        let baseAvailableToDeposit = valueToBigNumber(
-          walletBalances[API_ETH_MOCK_ADDRESS.toLowerCase()]?.amount
-        );
+        let baseWalletBalance = walletBalances[API_ETH_MOCK_ADDRESS.toLowerCase()]?.amount;
+        let baseWalletBalanceUSD = walletBalances[API_ETH_MOCK_ADDRESS.toLowerCase()]?.amountUSD;
+
+        //TODO: figure out better way to not repeat this check here
+        if (isShowUnifiedBalance && unifiedBalance) {
+          const baseUnifiedAsset = unifiedBalance.find((asset) => {
+            const typedAsset = asset;
+            return (
+              typedAsset.breakdown &&
+              typedAsset.breakdown.some(
+                (item) =>
+                  item.isNative &&
+                  item.contractAddress &&
+                  item.contractAddress.toLowerCase() === API_ETH_MOCK_ADDRESS.toLowerCase()
+              )
+            );
+          });
+
+          if (baseUnifiedAsset) {
+            const typedAsset = baseUnifiedAsset;
+            baseWalletBalance = typedAsset.balance;
+            baseWalletBalanceUSD = typedAsset.balanceInFiat.toString();
+          }
+        }
+
+        let baseAvailableToDeposit = valueToBigNumber(baseWalletBalance);
         if (reserve.supplyCap !== '0') {
           baseAvailableToDeposit = BigNumber.min(
             baseAvailableToDeposit,
@@ -157,8 +222,8 @@ export const SupplyAssetsList = () => {
               symbol: baseAssetSymbol,
               underlyingAsset: API_ETH_MOCK_ADDRESS.toLowerCase(),
             }),
-            walletBalance: walletBalances[API_ETH_MOCK_ADDRESS.toLowerCase()]?.amount,
-            walletBalanceUSD: walletBalances[API_ETH_MOCK_ADDRESS.toLowerCase()]?.amountUSD,
+            walletBalance: baseWalletBalance,
+            walletBalanceUSD: baseWalletBalanceUSD,
             availableToDeposit: baseAvailableToDeposit.toString(),
             availableToDepositUSD: baseAvailableToDepositUSD,
             usageAsCollateralEnabledOnUser,

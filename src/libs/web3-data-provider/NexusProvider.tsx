@@ -8,6 +8,7 @@ import {
   type SupportedChainsResult,
   type UserAsset,
   NexusSDK,
+  SupportedChainsAndTokensResult,
 } from '@avail-project/nexus-core';
 import {
   createContext,
@@ -31,7 +32,7 @@ interface NexusContextType {
   setIntent: React.Dispatch<React.SetStateAction<OnIntentHookData | null>>;
   allowance: OnAllowanceHookData | null;
   setAllowance: React.Dispatch<React.SetStateAction<OnAllowanceHookData | null>>;
-  supportedChainsAndTokens: SupportedChainsResult | null;
+  supportedChainsAndTokens: SupportedChainsAndTokensResult | null;
   swapSupportedChainsAndTokens: SupportedChainsResult | null;
   network?: NexusNetwork;
   loading: boolean;
@@ -70,7 +71,7 @@ const NexusProvider = ({ children, config = defaultConfig }: NexusProviderProps)
 
   const [nexusSDK, setNexusSDK] = useState<NexusSDK | null>(null);
   const [supportedChainsAndTokens, setSupportedChainsAndTokens] =
-    useState<SupportedChainsResult | null>(null);
+    useState<SupportedChainsAndTokensResult | null>(null);
   const [swapSupportedChainsAndTokens, setSwapSupportedChainsAndTokens] =
     useState<SupportedChainsResult | null>(null);
   const [unifiedBalance, setUnifiedBalance] = useState<UserAsset[] | null>(null);

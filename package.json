@@ -4,7 +4,7 @@
   "private": true,
   "license": "BSD-3-Clause",
   "scripts": {
-    "dev": "next dev",
+    "dev": "NODE_OPTIONS='--max_old_space_size=4096' next dev",
     "dev:special": "NODE_OPTIONS='--inspect --max_old_space_size=8000' next dev",
     "build": "next build",
     "build:analyze": "ANALYZE=true yarn build",
@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@aave/contract-helpers": "1.36.1",
+    "@avail-project/nexus-core": "1.0.0-beta.32",
     "@aave/math-utils": "1.36.1",
     "@aave/react": "0.6.1",
     "@amplitude/analytics-browser": "^2.13.0",

@@ -241,6 +241,7 @@ export const SupplyModalContent = React.memo(
           symbol={supplyUnWrapped ? currentNetworkConfig.baseAssetSymbol : poolReserve.symbol}
           assets={[
             {
+              //here
               balance: maxAmountToSupply,
               symbol: supplyUnWrapped ? currentNetworkConfig.baseAssetSymbol : poolReserve.symbol,
               iconSymbol: supplyUnWrapped
