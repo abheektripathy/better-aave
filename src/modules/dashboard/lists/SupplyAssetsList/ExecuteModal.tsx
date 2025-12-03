@@ -1,11 +1,9 @@
-/* eslint-disable simple-import-sort/imports */
 import { Trans } from '@lingui/macro';
 import { Box, Button, InputBase, Modal, Typography, useTheme } from '@mui/material';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { TokenIcon } from 'src/components/primitives/TokenIcon';
 import { useAaveDeposit } from 'src/hooks/useNexusDeposit';
 import { CustomMarket } from 'src/ui-config/marketsConfig';
-/* eslint-enable simple-import-sort/imports */
 
 interface ExecuteModalProps {
   underlyingAsset: string;
@@ -27,61 +25,43 @@ export const ExecuteModal = ({
   const [isOpen, setIsOpen] = useState(false);
   const [amount, setAmount] = useState('');
 
-  // References to prevent unnecessary re-renders
   const amountRef = useRef(amount);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const prevSimulationRef = useRef<string | null>(null);
   const isFirstRenderRef = useRef(true);
 
-  // UI state
   const [showSourcesDropdown, setShowSourcesDropdown] = useState(false);
   const [showFeesDropdown, setShowFeesDropdown] = useState(false);
   const [isDebouncing, setIsDebouncing] = useState(false);
 
-  // Check if amount exceeds wallet balance
   const isInsufficientBalance =
-    amount && walletBalance ? parseFloat(amount) > parseFloat(walletBalance) : false;
+    amount && walletBalance ? Number(amount) > Number(walletBalance) * 0.9 : false;
 
-  // Get deposit API functionality
-  const {
-    executeDeposit,
-    simulateDeposit,
-    isLoading,
-    // currentStep is received but not used
-    simulation,
-    isSimulating,
-    multiStepResult,
-  } = useAaveDeposit(amount, underlyingAsset, currentMarket as CustomMarket);
+  const { executeDeposit, simulateDeposit, isLoading, simulation, isSimulating, multiStepResult } =
+    useAaveDeposit(amount, underlyingAsset, currentMarket as CustomMarket);
 
-  // Set the ref value when amount changes
   useEffect(() => {
     amountRef.current = amount;
   }, [amount]);
 
-  // Debounced simulation logic
   const debouncedSimulation = useCallback(() => {
-    // Only simulate if there's an amount and it's changed
     if (amount && amount !== '0' && prevSimulationRef.current !== amount) {
       setIsDebouncing(true);
 
-      // Clear any existing timer
       if (timerRef.current) {
         clearTimeout(timerRef.current);
       }
 
-      // Set a new timer
       timerRef.current = setTimeout(() => {
-        // Only simulate if the modal is still open and the amount hasn't changed
         if (isOpen && amountRef.current === amount) {
           simulateDeposit();
           prevSimulationRef.current = amount;
           setIsDebouncing(false);
         }
-      }, 1000);
+      }, 400);
     }
   }, [amount, simulateDeposit, isOpen]);
 
-  // Run simulation when amount changes
   useEffect(() => {
     if (isFirstRenderRef.current) {
       isFirstRenderRef.current = false;
@@ -90,7 +70,6 @@ export const ExecuteModal = ({
 
     debouncedSimulation();
 
-    // Cleanup
     return () => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
@@ -98,30 +77,26 @@ export const ExecuteModal = ({
     };
   }, [amount, debouncedSimulation]);
 
-  // Reset the state when modal opens/closes
   useEffect(() => {
     if (!isOpen) {
-      // Clear any pending simulation
       if (timerRef.current) {
         clearTimeout(timerRef.current);
         timerRef.current = null;
       }
 
-      // Reset state on modal close
       prevSimulationRef.current = null;
       setIsDebouncing(false);
     }
   }, [isOpen]);
 
   const handleChange = (value: string) => {
-    // Validate input is a number
     if (value === '' || /^\d*\.?\d*$/.test(value)) {
       setAmount(value);
     }
   };
 
   const handleSetMax = () => {
-    setAmount(walletBalance);
+    setAmount((Number(walletBalance) * 0.9).toString());
   };
 
   const handleOpen = () => {
@@ -150,7 +125,6 @@ export const ExecuteModal = ({
     }
   };
 
-  // Show sources dropdown automatically when we get simulation data with sources
   useEffect(() => {
     const hasSources =
       multiStepResult?.bridgeSimulation?.intent?.sources &&
@@ -160,7 +134,6 @@ export const ExecuteModal = ({
     }
   }, [multiStepResult]);
 
-  // Helper to render the loading placeholder
   const LoadingPlaceholder = () => (
     <Box
       component="span"
@@ -182,9 +155,9 @@ export const ExecuteModal = ({
 
       <Modal
         open={isOpen}
-        onClose={handleClose}
         aria-labelledby="execute-modal-title"
         aria-describedby="execute-modal-description"
+        disableEscapeKeyDown
       >
         <Box
           sx={{
@@ -527,6 +500,11 @@ export const ExecuteModal = ({
                   {isLoading ? <Trans>Processing...</Trans> : <Trans>Supply</Trans>}
                 </Button>
               )}
+            </Box>
+            <Box sx={{ textAlign: 'center', mt: 2, mb: 1 }}>
+              <Typography variant="caption" color="text.secondary">
+                <Trans>Powered by Avail Nexus</Trans>
+              </Typography>
             </Box>
           </Box>
         </Box>

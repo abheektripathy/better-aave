@@ -86,8 +86,6 @@ export const SupplyAssetsList = () => {
     localStorage.getItem(listCollapseKey) === 'true'
   );
 
-  console.log('wallet balances map', walletBalances);
-
   const tokensToSupply = reserves
     .filter(
       (reserve: ComputedReserveData) =>
@@ -432,16 +430,23 @@ export const SupplyAssetsList = () => {
                 showFaucet={STAGING_ENV || ENABLE_TESTNET}
                 showBridge={!ENABLE_TESTNET}
               />*/}
-              <DashboardListTopPanel
-                value={isShowUnifiedBalance}
-                onClick={setIsShowUnifiedBalance}
-                localStorageName={unifiedBalanceLocalStorageName}
-                bridge={bridge}
-                eventName={DASHBOARD.SHOW_UNIFIED_BALANCE}
-                label={<Trans>Show unified balance</Trans>}
-                showFaucet={false}
-                showBridge={false}
-              />
+              {supportedChainsAndTokens &&
+              supportedChainsAndTokens.map(({ id }) => id).includes(currentChainId) ? (
+                <DashboardListTopPanel
+                  value={isShowUnifiedBalance}
+                  onClick={setIsShowUnifiedBalance}
+                  localStorageName={unifiedBalanceLocalStorageName}
+                  bridge={bridge}
+                  eventName={DASHBOARD.SHOW_UNIFIED_BALANCE}
+                  label={<Trans>Show unified balance</Trans>}
+                  showFaucet={false}
+                  showBridge={false}
+                />
+              ) : (
+                <Typography variant="caption" color="text.secondary">
+                  <Trans>Nexus not currently supported on this chain</Trans>
+                </Typography>
+              )}
             </>
           )}
         </>
