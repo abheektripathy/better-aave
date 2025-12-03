@@ -1200,10 +1200,6 @@ msgstr "Your {0} balance is lower than the selected amount."
 msgid "Unstake window"
 msgstr "Unstake window"
 
-#: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsList.tsx
-msgid "Nexus not currently supported on this chain"
-msgstr "Nexus not currently supported on this chain"
-
 #: src/modules/reserve-overview/graphs/MeritApyGraphContainer.tsx
 msgid "Reload"
 msgstr "Reload"
