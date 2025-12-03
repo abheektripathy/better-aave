@@ -13,7 +13,7 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ContentWithTooltip } from 'src/components/ContentWithTooltip';
 import { IncentivesCard } from 'src/components/incentives/IncentivesCard';
 import { WrappedTokenTooltipContent } from 'src/components/infoTooltips/WrappedTokenToolTipContent';
@@ -42,6 +42,7 @@ import { ListItemWrapper } from '../ListItemWrapper';
 import { ListMobileItemWrapper } from '../ListMobileItemWrapper';
 import { ListValueColumn } from '../ListValueColumn';
 import { ListValueRow } from '../ListValueRow';
+import { ExecuteModal } from './ExecuteModal';
 
 export const SupplyAssetsListItem = (
   params: DashboardReserve & { walletBalances: WalletBalancesMap }
@@ -59,7 +60,7 @@ export const SupplyAssetsListItem = (
 
   const canSupplyAsWrappedToken =
     wrappedToken &&
-    params.walletBalances[wrappedToken.tokenIn.underlyingAsset.toLowerCase()].amount !== '0';
+    params.walletBalances[wrappedToken.tokenIn.underlyingAsset.toLowerCase()]?.amount !== '0';
 
   const disableSupply =
     !isActive ||
@@ -109,6 +110,23 @@ export const SupplyAssetsListItemDesktop = ({
   const currentMarketData = useRootStore((store) => store.currentMarketData);
   const currentMarket = useRootStore((store) => store.currentMarket);
   const wrappedTokenReserves = useWrappedTokens();
+  const unifiedBalanceLocalStorageName = 'showUnifiedBalance';
+  const [, forceRender] = useState({});
+
+  // Listen for changes to localStorage
+  useEffect(() => {
+    const handleStorageChange = () => {
+      // Force a re-render when storage changes
+      forceRender({});
+    };
+
+    // Initial check not needed since we directly check localStorage in render
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   const { openSupply, openSwitch } = useModalContext();
 
@@ -239,15 +257,26 @@ export const SupplyAssetsListItemDesktop = ({
       </ListColumn>
 
       <ListButtonsColumn>
-        <Button
-          disabled={disableSupply}
-          variant="contained"
-          onClick={() => {
-            openSupply(underlyingAsset, currentMarket, name, 'dashboard');
-          }}
-        >
-          <Trans>Supply</Trans>
-        </Button>
+        {localStorage.getItem(unifiedBalanceLocalStorageName) === 'true' ? (
+          <ExecuteModal
+            underlyingAsset={underlyingAsset}
+            currentMarket={currentMarket}
+            name={name}
+            disableSupply={disableSupply}
+            walletBalance={walletBalance}
+            symbol={symbol}
+          />
+        ) : (
+          <Button
+            disabled={disableSupply}
+            variant="contained"
+            onClick={() => {
+              openSupply(underlyingAsset, currentMarket, name, 'dashboard');
+            }}
+          >
+            <Trans>Supply</Trans>
+          </Button>
+        )}
         <Button
           id="supply-extra-button"
           sx={{
@@ -445,15 +474,28 @@ export const SupplyAssetsListItemMobile = ({
       </Row>
 
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 5 }}>
-        <Button
-          disabled={disableSupply}
-          variant="contained"
-          onClick={() => openSupply(underlyingAsset, currentMarket, name, 'dashboard')}
-          sx={{ mr: 1.5 }}
-          fullWidth
-        >
-          <Trans>Supply</Trans>
-        </Button>
+        {localStorage.getItem('showUnifiedBalance') === 'true' ? (
+          <ExecuteModal
+            underlyingAsset={underlyingAsset}
+            currentMarket={currentMarket}
+            name={name}
+            disableSupply={disableSupply}
+            walletBalance={walletBalance}
+            symbol={symbol}
+          />
+        ) : (
+          <Button
+            disabled={disableSupply}
+            variant="contained"
+            onClick={() => {
+              openSupply(underlyingAsset, currentMarket, name, 'dashboard');
+            }}
+            sx={{ mr: 1.5 }}
+            fullWidth
+          >
+            <Trans>Supply</Trans>
+          </Button>
+        )}
         <Button
           variant="outlined"
           component={Link}

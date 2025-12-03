@@ -1,0 +1,6 @@
+{
+  "use_on_type_format": false,
+  "git":{
+    "git_gutter":"hide"
+  }
+}

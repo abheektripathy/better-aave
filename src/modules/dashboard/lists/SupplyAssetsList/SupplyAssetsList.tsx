@@ -51,7 +51,7 @@ const head = [
 export const SupplyAssetsList = () => {
   const { data, isLoading, error } = useCoingeckoCategories();
   const [selectedCategories, setSelectedCategories] = useState<AssetCategory[]>([]);
-  const { unifiedBalance, supportedChainsAndTokens } = useNexus();
+  const { bridgableBalance, supportedChainsAndTokens } = useNexus();
 
   const currentNetworkConfig = useRootStore((store) => store.currentNetworkConfig);
   const currentChainId = useRootStore((store) => store.currentChainId);
@@ -85,6 +85,8 @@ export const SupplyAssetsList = () => {
   const [isListCollapsed, setIsListCollapsed] = useState(
     localStorage.getItem(listCollapseKey) === 'true'
   );
+
+  console.log('wallet balances map', walletBalances);
 
   const tokensToSupply = reserves
     .filter(
@@ -132,8 +134,8 @@ export const SupplyAssetsList = () => {
       let walletBalanceUSD = walletBalances[reserve.underlyingAsset]?.amountUSD;
 
       // If unified balance is enabled, try to get balance from unified balance
-      if (isShowUnifiedBalance && unifiedBalance) {
-        const unifiedAsset = unifiedBalance.find((asset) => {
+      if (isShowUnifiedBalance && bridgableBalance) {
+        const unifiedAsset = bridgableBalance.find((asset) => {
           return (
             asset.breakdown &&
             asset.breakdown.some(
@@ -180,8 +182,8 @@ export const SupplyAssetsList = () => {
         let baseWalletBalanceUSD = walletBalances[API_ETH_MOCK_ADDRESS.toLowerCase()]?.amountUSD;
 
         //TODO: figure out better way to not repeat this check here
-        if (isShowUnifiedBalance && unifiedBalance) {
-          const baseUnifiedAsset = unifiedBalance.find((asset) => {
+        if (isShowUnifiedBalance && bridgableBalance) {
+          const baseUnifiedAsset = bridgableBalance.find((asset) => {
             const typedAsset = asset;
             return (
               typedAsset.breakdown &&

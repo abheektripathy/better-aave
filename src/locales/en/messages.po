@@ -113,6 +113,10 @@ msgstr "FAQ"
 msgid "Deposit GHO and earn up to <0>{0}%</0> APY"
 msgstr "Deposit GHO and earn up to <0>{0}%</0> APY"
 
+#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
+msgid "Fees"
+msgstr "Fees"
+
 #: src/ui-config/errorMapping.tsx
 msgid "Stable borrowing is not enabled"
 msgstr "Stable borrowing is not enabled"
@@ -243,6 +247,10 @@ msgstr "Please connect your wallet to swap collateral."
 msgid "Asset cannot be migrated due to supply cap restriction in {marketName} v3 market."
 msgstr "Asset cannot be migrated due to supply cap restriction in {marketName} v3 market."
 
+#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
+msgid "Bridge Fee"
+msgstr "Bridge Fee"
+
 #: src/modules/sGho/SavingsGhoCard.tsx
 msgid "Initiate Withdraw"
 msgstr "Initiate Withdraw"
@@ -313,6 +321,7 @@ msgstr "{0} Balance{1}"
 
 #: src/components/transactions/Supply/SupplyActions.tsx
 #: src/components/transactions/Supply/SupplyWrappedTokenActions.tsx
+#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
 msgid "Supply {symbol}"
 msgstr "Supply {symbol}"
 
@@ -357,6 +366,7 @@ msgid "View Transactions"
 msgstr "View Transactions"
 
 #: src/modules/dashboard/LiquidationRiskParametresModal/components/LTVContent.tsx
+#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
 msgid "MAX"
 msgstr "MAX"
 
@@ -830,6 +840,10 @@ msgstr "AAVE and ABPT holders (Ethereum network only) can stake their assets in 
 msgid "Savings"
 msgstr "Savings"
 
+#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
+msgid "Source Chains"
+msgstr "Source Chains"
+
 #: src/components/transactions/Emode/EmodeModalContent.tsx
 #: src/modules/dashboard/DashboardEModeButton.tsx
 msgid "Asset category"
@@ -979,6 +993,10 @@ msgstr "Supply balance after switch"
 msgid "Asset cannot be migrated to {marketName} V3 Market due to E-mode restrictions. You can disable or manage E-mode categories in your <0>V3 Dashboard</0>"
 msgstr "Asset cannot be migrated to {marketName} V3 Market due to E-mode restrictions. You can disable or manage E-mode categories in your <0>V3 Dashboard</0>"
 
+#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
+msgid "View Sources"
+msgstr "View Sources"
+
 #: src/modules/umbrella/UmbrellaHeader.tsx
 msgid "Stake your Aave aTokens or underlying assets to earn rewards. In case of a shortfall event, your stake may be slashed to cover the deficit."
 msgstr "Stake your Aave aTokens or underlying assets to earn rewards. In case of a shortfall event, your stake may be slashed to cover the deficit."
@@ -993,6 +1011,7 @@ msgstr "Claiming all protocol rewards only. Merit rewards excluded - select \"cl
 
 #: src/components/transactions/FlowCommons/TxModalDetails.tsx
 #: src/components/transactions/Swap/details/CollateralSwapDetails.tsx
+#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
 #: src/modules/history/actions/ActionDetails.tsx
 msgid "Collateralization"
 msgstr "Collateralization"
@@ -1007,6 +1026,7 @@ msgstr "Main Ethereum market with the largest selection of assets and yield opti
 
 #: src/components/ReserveSubheader.tsx
 #: src/components/transactions/FlowCommons/TxModalDetails.tsx
+#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
 msgid "Disabled"
 msgstr "Disabled"
 
@@ -1280,6 +1300,7 @@ msgstr "You have assets with zero LTV that are blocking this operation. Please w
 #: src/layouts/TopBarNotify.tsx
 #: src/layouts/TopBarNotify.tsx
 #: src/modules/dashboard/DashboardEModeButton.tsx
+#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
 #: src/modules/reserve-overview/ReserveTopDetailsWrapper.tsx
 #: src/modules/staking/SavingsGhoProgram.tsx
 #: src/modules/umbrella/StakeCooldownModalContent.tsx
@@ -1577,6 +1598,7 @@ msgstr "Weekly Rewards"
 msgid "Pending..."
 msgstr "Pending..."
 
+#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
 #: src/modules/staking/GhoStakingPanel.tsx
 #: src/modules/staking/StakingPanel.tsx
 msgid "Wallet Balance"
@@ -2253,6 +2275,7 @@ msgid "Add {0} to wallet to track your balance."
 msgstr "Add {0} to wallet to track your balance."
 
 #: src/components/transactions/Swap/actions/ActionsSkeleton.tsx
+#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
 msgid "Loading..."
 msgstr "Loading..."
 
@@ -2426,6 +2449,8 @@ msgstr "supply"
 #: src/components/transactions/Supply/SupplyModal.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsListItem.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsListMobileItem.tsx
+#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
+#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsListItem.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsListItem.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsListMobileItem.tsx
@@ -2816,6 +2841,7 @@ msgstr "The % of your total borrowing power used. This is based on the amount of
 #: src/components/transactions/Bridge/BridgeAmount.tsx
 #: src/components/transactions/Bridge/BridgeAmount.tsx
 #: src/components/transactions/Faucet/FaucetModalContent.tsx
+#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
 #: src/modules/umbrella/UmbrellaClaimModalContent.tsx
 #: src/modules/umbrella/UmbrellaClaimModalContent.tsx
 msgid "Amount"
@@ -3013,6 +3039,10 @@ msgstr "Unavailable"
 #: src/layouts/components/LanguageSwitcher.tsx
 msgid "Select language"
 msgstr "Select language"
+
+#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
+msgid "Processing..."
+msgstr "Processing..."
 
 #: src/components/transactions/Borrow/ParameterChangewarning.tsx
 msgid "<0>Attention:</0> Parameter changes via governance can alter your account health factor and risk of liquidation. Follow the <1>Aave governance forum</1> for updates."
@@ -3424,6 +3454,7 @@ msgstr "Staked"
 #: src/components/transactions/Supply/SupplyModalContent.tsx
 #: src/components/transactions/Supply/SupplyModalContent.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsListMobileItem.tsx
+#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsListItem.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsListMobileItem.tsx
 #: src/modules/markets/MarketAssetsList.tsx
@@ -3823,6 +3854,10 @@ msgstr "Stable debt supply is not zero"
 msgid "Savings GHO"
 msgstr "Savings GHO"
 
+#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
+msgid "Execution Gas"
+msgstr "Execution Gas"
+
 #: src/components/transactions/FlowCommons/TxModalDetails.tsx
 msgid "Rewards APR"
 msgstr "Rewards APR"
@@ -3966,6 +4001,7 @@ msgid "Total market size"
 msgstr "Total market size"
 
 #: src/components/transactions/FlowCommons/TxModalDetails.tsx
+#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
 msgid "Transaction overview"
 msgstr "Transaction overview"
 
@@ -4069,6 +4105,10 @@ msgstr "Remaining debt"
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsListMobileItem.tsx
 msgid "Supply balance"
 msgstr "Supply balance"
+
+#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
+msgid "Insufficient balance"
+msgstr "Insufficient balance"
 
 #: src/modules/dashboard/LiquidationRiskParametresModal/LiquidationRiskParametresModal.tsx
 msgid "Liquidation risk parameters"

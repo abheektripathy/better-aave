@@ -4,15 +4,13 @@ import type {
   BridgeAndExecuteParams,
   BridgeAndExecuteSimulationResult,
 } from '@avail-project/nexus-core';
-import { TOKEN_CONTRACT_ADDRESSES, TOKEN_METADATA } from '@avail-project/nexus-core';
-// import dynamic from 'next/dynamic';
+import { CHAIN_METADATA } from '@avail-project/nexus-core';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useNexus } from 'src/libs/web3-data-provider/NexusProvider';
-import { type Hex, encodeFunctionData, formatUnits, parseUnits } from 'viem';
+import { CustomMarket, marketsData } from 'src/ui-config/marketsConfig';
+import { type Hex, encodeFunctionData, parseUnits } from 'viem';
 import { useAccount } from 'wagmi';
-
-//const useNexus = dynamic(() => import('src/libs/web3-data-provider/NexusProvider'));
 
 interface AaveDepositResult {
   success: boolean;
@@ -21,10 +19,12 @@ interface AaveDepositResult {
 }
 
 interface SimulationResult {
-  bridgeFee: string;
+  bridgeFee: number;
   executionGas: string;
+  gasUsd: number;
   totalCost: string;
   destinationAmount: string;
+  simulation: BridgeAndExecuteSimulationResult;
 }
 
 const AAVE_POOL_ABI = [
@@ -65,15 +65,14 @@ function parseError(error: unknown) {
   return { type: 'UNKNOWN', message: 'Unknown error occurred' };
 }
 
-const TOKEN = 'USDC' as const;
-const AAVE_POOL_ADDRESS = '0xA238Dd80C259a72e81d7e4664a9801593F98d1c5';
-const BASE_CHAIN_ID = 8453;
-
-const TOKEN_DECIMALS = TOKEN_METADATA[TOKEN].decimals;
-const TOKEN_ADDRESS = TOKEN_CONTRACT_ADDRESSES.USDC[BASE_CHAIN_ID];
-
-export function useAaveDeposit(depositAmount: string) {
-  const { nexusSDK } = useNexus();
+export function useAaveDeposit(
+  depositAmount: string,
+  //this tells us the asset we're despositing
+  assetAddress: string,
+  //this tells us the chainID
+  market: CustomMarket
+) {
+  const { nexusSDK, getFiatValue, supportedChainsAndTokens } = useNexus();
   const { address } = useAccount();
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState<string>('');
@@ -83,23 +82,43 @@ export function useAaveDeposit(depositAmount: string) {
     null
   );
 
+  const findTokenWithChain = (address: Hex) => {
+    if (!supportedChainsAndTokens) {
+      throw new Error('Supported chains and tokens not loaded');
+    }
+
+    for (const chain of supportedChainsAndTokens) {
+      const token = chain.tokens.find(
+        (t) => t.contractAddress.toLowerCase() === address.toLowerCase()
+      );
+      if (token) {
+        return { chain, token };
+      }
+    }
+
+    throw new Error(`Token not found for address: ${address}`);
+  };
+
   function buildExecuteParams() {
     if (!address) throw new Error('Wallet not connected');
 
-    const amountWei = parseUnits(depositAmount, TOKEN_DECIMALS);
+    const tokenDeets = findTokenWithChain(assetAddress as Hex);
+    if (!tokenDeets || !tokenDeets.token) throw new Error('cant fetch token details');
+
+    const amountWei = parseUnits(depositAmount, tokenDeets.token.decimals);
 
     return {
-      to: AAVE_POOL_ADDRESS as Hex,
+      to: marketsData[market].addresses.LENDING_POOL as Hex,
       data: encodeFunctionData({
         abi: AAVE_POOL_ABI,
         functionName: 'supply',
-        args: [TOKEN_ADDRESS as Hex, amountWei, address as Hex, 0],
+        args: [assetAddress as Hex, amountWei, address as Hex, 0],
       }),
       value: BigInt(0),
       tokenApproval: {
-        token: TOKEN,
+        token: tokenDeets.token.symbol,
         amount: amountWei,
-        spender: AAVE_POOL_ADDRESS as Hex,
+        spender: marketsData[market].addresses.LENDING_POOL as Hex,
       },
     };
   }
@@ -114,59 +133,61 @@ export function useAaveDeposit(depositAmount: string) {
     setCurrentStep('Simulating transaction...');
 
     try {
+      const tokenDeets = findTokenWithChain(assetAddress as Hex);
       const executeParams = buildExecuteParams();
 
       const params: BridgeAndExecuteParams = {
-        token: TOKEN,
-        amount: parseUnits(depositAmount, TOKEN_DECIMALS),
-        toChainId: BASE_CHAIN_ID,
+        token: tokenDeets.token.symbol,
+        amount: parseUnits(depositAmount, tokenDeets.token.decimals),
+        //verify this chain id actually corresponds to the destination chain id
+        toChainId: tokenDeets.chain.id,
         execute: executeParams,
       };
 
-      const result = await nexusSDK.simulateBridgeAndExecute(params);
-      setMultiStepResult(result);
-      console.log(result, 'simulate txn');
+      const simulation = await nexusSDK.simulateBridgeAndExecute(params);
+      setMultiStepResult(simulation);
 
-      if (!result.bridgeSimulation && result.executeSimulation) {
-        toast.info('No bridging needed - funds already on Base');
-        const gasFeeUsed = result.executeSimulation?.gasUsed || BigInt(0);
-        const gasFee = parseFloat(formatUnits(gasFeeUsed, TOKEN_DECIMALS));
+      const native = CHAIN_METADATA[tokenDeets.chain.id].nativeCurrency;
+      const nativeSymbol = native.symbol;
+      const nativeDecimals = native.decimals;
 
-        setSimulation({
-          bridgeFee: '0',
-          executionGas: formatUnits(gasFeeUsed, TOKEN_DECIMALS),
-          totalCost: gasFee.toFixed(6),
-          destinationAmount: depositAmount,
-        });
-
-        setCurrentStep('');
-        return true;
-      }
-
-      if (result.bridgeSimulation && result.executeSimulation) {
-        const bridgeFeeStr = result.bridgeSimulation?.intent?.fees?.total || '0';
-        const gasFeeUsed = result.executeSimulation?.gasUsed || BigInt(0);
-
-        const bridgeFee = parseFloat(bridgeFeeStr);
-        const gasFee = parseFloat(formatUnits(gasFeeUsed, TOKEN_DECIMALS));
-        const totalCost = (bridgeFee + gasFee).toFixed(3);
-
-        setSimulation({
-          bridgeFee: bridgeFee.toFixed(TOKEN_DECIMALS),
-          executionGas: formatUnits(result.executeSimulation?.gasUsed || BigInt(0), TOKEN_DECIMALS),
-          totalCost,
-          destinationAmount:
-            //TODO: this needs to be fixed
-            result.bridgeSimulation?.intent?.destination?.amount || depositAmount,
-        });
-
-        setCurrentStep('');
-        return true;
-      } else {
+      if (!simulation.executeSimulation) {
         toast.error('Simulation failed - check console for details');
         setCurrentStep('');
         return false;
       }
+
+      if (!simulation.bridgeSimulation) {
+        toast.info('No bridging needed - funds already on destination chain');
+      }
+
+      const { gasFee } = simulation.executeSimulation;
+      const gasFormatted = nexusSDK.utils.formatTokenBalance(gasFee, {
+        symbol: nativeSymbol,
+        decimals: nativeDecimals,
+      });
+
+      const gasUnits = Number.parseFloat(nexusSDK.utils.formatUnits(gasFee, nativeDecimals));
+      const gasUsd = getFiatValue(gasUnits, nativeSymbol);
+
+      let bridgeUsd = 0;
+      if (simulation.bridgeSimulation) {
+        const { total: bridgeFeeTotal } = simulation.bridgeSimulation.intent.fees;
+        bridgeUsd = getFiatValue(Number.parseFloat(bridgeFeeTotal), tokenDeets.token.name);
+      }
+
+      setSimulation({
+        bridgeFee: bridgeUsd,
+        //this is in native symbol
+        executionGas: gasFormatted,
+        totalCost: (bridgeUsd + gasUsd).toString(),
+        gasUsd,
+        destinationAmount: depositAmount,
+        simulation: simulation,
+      });
+
+      setCurrentStep('');
+      return true;
     } catch (error) {
       const parsedError = parseError(error);
       toast.error(parsedError.message);
@@ -188,11 +209,13 @@ export function useAaveDeposit(depositAmount: string) {
 
     try {
       const executeParams = buildExecuteParams();
+      const tokenDeets = findTokenWithChain(assetAddress as Hex);
 
       const params: BridgeAndExecuteParams = {
-        token: TOKEN,
-        amount: parseUnits(depositAmount, TOKEN_DECIMALS),
-        toChainId: BASE_CHAIN_ID,
+        token: tokenDeets.token.symbol,
+        amount: parseUnits(depositAmount, tokenDeets.token.decimals),
+        //verify this chain id actually corresponds to the destination chain id
+        toChainId: tokenDeets.chain.id,
         execute: executeParams,
         waitForReceipt: true,
         receiptTimeout: 300000,
@@ -201,12 +224,10 @@ export function useAaveDeposit(depositAmount: string) {
       setCurrentStep('Initiating bridge...');
 
       const result = await nexusSDK.bridgeAndExecute(params);
-      console.log(result, 'the end');
-
       setCurrentStep('');
 
       if (result.executeTransactionHash) {
-        toast.success(`Successfully deposited ${depositAmount} ${TOKEN} to AAVE!`, {
+        toast.success(`Successfully deposited ${depositAmount} ${tokenDeets.token.name} to AAVE!`, {
           duration: 5000,
           action: result.executeExplorerUrl
             ? {

@@ -1,5 +1,6 @@
 import '/public/fonts/inter/inter.css';
 import '/src/styles/variables.css';
+import '/src/styles/global.css';
 
 import { AaveClient, AaveProvider } from '@aave/react';
 import { CacheProvider, EmotionCache } from '@emotion/react';
