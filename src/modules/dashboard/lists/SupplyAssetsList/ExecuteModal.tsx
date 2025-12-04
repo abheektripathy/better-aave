@@ -1,3 +1,5 @@
+import { ProtocolAction } from '@aave/contract-helpers';
+import { ReserveIncentiveResponse } from '@aave/math-utils/dist/esm/formatters/incentive/calculate-reserve-incentives';
 import { Trans } from '@lingui/macro';
 import { Box, Button, InputBase, Modal, Typography, useTheme } from '@mui/material';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -5,13 +7,18 @@ import { TokenIcon } from 'src/components/primitives/TokenIcon';
 import { useAaveDeposit } from 'src/hooks/useNexusDeposit';
 import { CustomMarket } from 'src/ui-config/marketsConfig';
 
+import { ListAPRColumn } from '../ListAPRColumn';
+
 interface ExecuteModalProps {
   underlyingAsset: string;
-  currentMarket: string;
+  currentMarket: CustomMarket;
   name: string;
   disableSupply: boolean;
   walletBalance: string;
   symbol: string;
+  supplyApy: string;
+  aTokenAddress: string;
+  aIncentivesData?: ReserveIncentiveResponse[];
 }
 
 export const ExecuteModal = ({
@@ -20,6 +27,9 @@ export const ExecuteModal = ({
   disableSupply,
   symbol,
   walletBalance,
+  supplyApy,
+  aTokenAddress,
+  aIncentivesData,
 }: ExecuteModalProps) => {
   const theme = useTheme();
   const [isOpen, setIsOpen] = useState(false);
@@ -287,13 +297,22 @@ export const ExecuteModal = ({
                 bgcolor: theme.palette.background.surface,
               }}
             >
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography color="text.secondary">
                   <Trans>Supply APY</Trans>
                 </Typography>
-                <Typography>
-                  {/*this should come from the actual supply number currently it's hardcoded*/}
-                  {isDebouncing || isSimulating ? <LoadingPlaceholder /> : '1.44%'}
+                <Typography
+                  color="text.secondary"
+                  sx={{ display: 'flex', justifyContent: 'space-between' }}
+                >
+                  <ListAPRColumn
+                    value={Number(supplyApy)}
+                    market={currentMarket}
+                    protocolAction={ProtocolAction.supply}
+                    address={aTokenAddress}
+                    incentives={aIncentivesData}
+                    symbol={symbol}
+                  />
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>

@@ -235,7 +235,6 @@ export const SupplyAssetsListItemDesktop = ({
           }
         />
       )}
-
       <ListAPRColumn
         value={Number(supplyAPY)}
         market={currentMarket}
@@ -244,7 +243,6 @@ export const SupplyAssetsListItemDesktop = ({
         incentives={aIncentivesData}
         symbol={symbol}
       />
-
       <ListColumn>
         {debtCeiling.isMaxed ? (
           <NoData variant="main14" color="text.secondary" />
@@ -265,6 +263,9 @@ export const SupplyAssetsListItemDesktop = ({
             disableSupply={disableSupply}
             walletBalance={walletBalance}
             symbol={symbol}
+            supplyApy={supplyAPY}
+            aTokenAddress={aTokenAddress}
+            aIncentivesData={aIncentivesData}
           />
         ) : (
           <Button
@@ -482,6 +483,9 @@ export const SupplyAssetsListItemMobile = ({
             disableSupply={disableSupply}
             walletBalance={walletBalance}
             symbol={symbol}
+            supplyApy={supplyAPY}
+            aTokenAddress={aTokenAddress}
+            aIncentivesData={aIncentivesData}
           />
         ) : (
           <Button
