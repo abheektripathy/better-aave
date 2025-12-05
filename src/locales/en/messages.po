@@ -690,6 +690,10 @@ msgstr "Swap {0} collateral"
 msgid "Show"
 msgstr "Show"
 
+#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
+msgid "Sourcing From"
+msgstr "Sourcing From"
+
 #: src/modules/markets/Gho/GhoBanner.tsx
 #: src/modules/markets/Gho/GhoBanner.tsx
 #: src/modules/reserve-overview/Gho/SavingsGho.tsx
@@ -839,10 +843,6 @@ msgstr "AAVE and ABPT holders (Ethereum network only) can stake their assets in 
 #: src/layouts/components/NavItems.tsx
 msgid "Savings"
 msgstr "Savings"
-
-#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
-msgid "Source Chains"
-msgstr "Source Chains"
 
 #: src/components/transactions/Emode/EmodeModalContent.tsx
 #: src/modules/dashboard/DashboardEModeButton.tsx
@@ -1241,6 +1241,7 @@ msgid "The Safety Module has been upgraded to <0>Umbrella</0>, a new system that
 msgstr "The Safety Module has been upgraded to <0>Umbrella</0>, a new system that introduces automated slashing, aToken staking, and improved incentives design."
 
 #: src/components/transactions/FlowCommons/BaseSuccess.tsx
+#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
 msgid "All done"
 msgstr "All done"
 
@@ -2100,6 +2101,7 @@ msgstr "Claiming all merit rewards only"
 #: src/components/transactions/FlowCommons/BaseCancelled.tsx
 #: src/components/transactions/FlowCommons/BaseSuccess.tsx
 #: src/components/transactions/FlowCommons/BaseWaiting.tsx
+#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
 msgid "Review tx details"
 msgstr "Review tx details"
 
@@ -3203,6 +3205,7 @@ msgstr "Stake AAVE"
 #: src/components/transactions/FlowCommons/BaseCancelled.tsx
 #: src/components/transactions/FlowCommons/BaseSuccess.tsx
 #: src/components/transactions/FlowCommons/BaseWaiting.tsx
+#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
 msgid "Ok, Close"
 msgstr "Ok, Close"
 
@@ -3679,6 +3682,10 @@ msgstr "Remove"
 #: src/components/transactions/Swap/inputs/shared/SwitchSlippageSelector.tsx
 msgid "Auto Slippage"
 msgstr "Auto Slippage"
+
+#: src/modules/dashboard/lists/SupplyAssetsList/ExecuteModal.tsx
+msgid "You have successfully deposited {amount} {symbol}"
+msgstr "You have successfully deposited {amount} {symbol}"
 
 #: src/components/incentives/MeritIncentivesTooltipContent.tsx
 msgid "Supply {0} and double your yield by <0><1>verifying your humanity through Self</1></0> for {1} per user."

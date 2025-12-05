@@ -16,6 +16,7 @@ interface AaveDepositResult {
   success: boolean;
   error?: string;
   txHash?: string;
+  explorerUrl?: string;
 }
 
 interface SimulationResult {
@@ -237,7 +238,11 @@ export function useAaveDeposit(
             : undefined,
         });
 
-        return { success: true, txHash: result.executeTransactionHash };
+        return {
+          success: true,
+          txHash: result.executeTransactionHash,
+          explorerUrl: result.executeExplorerUrl,
+        };
       } else {
         toast.error('Transaction failed to complete');
         return { success: false, error: 'No transaction hash returned' };
